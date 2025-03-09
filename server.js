@@ -28,6 +28,7 @@ admin.initializeApp({
 
 const auth = admin.auth();
 const db = admin.firestore();
+const likesCollection = db.collection("likes");
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
@@ -122,13 +123,32 @@ app.get("/projects", async (req, res) => {
 });
 
 // 🌟 Proje Beğenme Endpoint'i
+// Beğenme işlemini takip etmek için bir koleksiyon oluştur
+const likesCollection = db.collection("likes");
+
 app.post("/like-project", async (req, res) => {
-  const { projectId } = req.body;
+  const { projectId, userId } = req.body; // userId veya IP adresi kullanılabilir
+  const userIdentifier = userId || req.ip; // Kullanıcıyı tanımlamak için IP veya userId
 
   try {
+    // Kullanıcının bu projeyi daha önce beğenip beğenmediğini kontrol et
+    const likeDoc = await likesCollection.doc(`${projectId}_${userIdentifier}`).get();
+
+    if (likeDoc.exists) {
+      return res.status(400).json({ message: "Bu projeyi zaten beğendiniz!" });
+    }
+
+    // Projenin beğeni sayısını artır
     const projectRef = db.collection("projects").doc(projectId);
     await projectRef.update({
       likes: admin.firestore.FieldValue.increment(1)
+    });
+
+    // Kullanıcının beğenme işlemini kaydet
+    await likesCollection.doc(`${projectId}_${userIdentifier}`).set({
+      projectId,
+      userIdentifier,
+      timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
 
     res.status(200).json({ message: "Proje beğenildi!" });
