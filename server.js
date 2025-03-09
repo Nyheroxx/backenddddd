@@ -28,7 +28,6 @@ admin.initializeApp({
 
 const auth = admin.auth();
 const db = admin.firestore();
-const likesCollection = db.collection("likes");
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
