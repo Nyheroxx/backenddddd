@@ -39,12 +39,13 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const userRecord = await auth.getUserByEmail(email);
-    if (userRecord) {
-      return res.status(200).json({ message: "Giriş başarılı!", user: userRecord });
-    }
+    // Firebase ile kullanıcı girişini doğrula
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    return res.status(200).json({ message: "Giriş başarılı!", user });
   } catch (error) {
-    return res.status(401).json({ message: "Geçersiz giriş bilgileri!" });
+    return res.status(401).json({ message: "Geçersiz e-posta veya şifre!" });
   }
 });
 
