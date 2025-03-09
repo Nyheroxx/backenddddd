@@ -19,6 +19,7 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 const admin = require("firebase-admin");
+admin.initializeApp();
 const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
 
 // Firebase Admin SDK'yı başlat
@@ -35,14 +36,17 @@ app.listen(PORT, () => {
 });
 
 // 🔥 Admin Girişi API’si
-app.post("/login", async (req, res) => {
+app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Firebase Auth ile giriş yap (Bu sadece istemcide çalışır, backend için doğru yöntem değil!)
-    return res.status(400).json({ message: "Giriş doğrulaması istemci tarafında yapılmalı!" });
+    const userRecord = await admin.auth().getUserByEmail(email);
+    // Kullanıcıyı bulursanız işlemi devam ettirebilirsiniz
+    if (userRecord) {
+      res.status(200).json({ message: "Giriş başarılı!", user: userRecord });
+    }
   } catch (error) {
-    return res.status(401).json({ message: "Geçersiz e-posta veya şifre!" });
+    res.status(401).json({ message: "Geçersiz giriş bilgileri!" });
   }
 });
 
