@@ -122,7 +122,6 @@ app.get("/projects", async (req, res) => {
 });
 
 // 🌟 Proje Beğenme Endpoint'i
-// Beğenme işlemini takip etmek için bir koleksiyon oluştur
 app.post("/like-project", async (req, res) => {
   const { projectId } = req.body;
 
