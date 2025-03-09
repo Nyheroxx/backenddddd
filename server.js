@@ -126,8 +126,8 @@ app.get("/projects", async (req, res) => {
 const likesCollection = db.collection("likes");
 
 app.post("/like-project", async (req, res) => {
-  const { projectId, userId } = req.body; // userId veya IP adresi
-  const userIdentifier = userId || req.ip; // Kullanıcıyı tanımlamak için
+  const { projectId } = req.body;
+  const userIdentifier = req.ip; // Kullanıcının IP adresi
 
   if (!projectId) {
     return res.status(400).json({ message: "projectId gereklidir!" });
