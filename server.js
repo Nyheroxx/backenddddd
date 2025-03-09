@@ -126,12 +126,16 @@ app.get("/projects", async (req, res) => {
 const likesCollection = db.collection("likes");
 
 app.post("/like-project", async (req, res) => {
-  const { projectId, userId } = req.body; // userId veya IP adresi kullanılabilir
-  const userIdentifier = userId || req.ip; // Kullanıcıyı tanımlamak için IP veya userId
+  const { projectId, userId } = req.body; // userId veya IP adresi
+  const userIdentifier = userId || req.ip; // Kullanıcıyı tanımlamak için
+
+  if (!projectId) {
+    return res.status(400).json({ message: "projectId gereklidir!" });
+  }
 
   try {
     // Kullanıcının bu projeyi daha önce beğenip beğenmediğini kontrol et
-    const likeDoc = await likesCollection.doc(`${projectId}_${userIdentifier}`).get();
+    const likeDoc = await db.collection("likes").doc(`${projectId}_${userIdentifier}`).get();
 
     if (likeDoc.exists) {
       return res.status(400).json({ message: "Bu projeyi zaten beğendiniz!" });
@@ -144,7 +148,7 @@ app.post("/like-project", async (req, res) => {
     });
 
     // Kullanıcının beğenme işlemini kaydet
-    await likesCollection.doc(`${projectId}_${userIdentifier}`).set({
+    await db.collection("likes").doc(`${projectId}_${userIdentifier}`).set({
       projectId,
       userIdentifier,
       timestamp: admin.firestore.FieldValue.serverTimestamp()
