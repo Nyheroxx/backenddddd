@@ -39,11 +39,8 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Firebase ile kullanıcı girişini doğrula
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    return res.status(200).json({ message: "Giriş başarılı!", user });
+    // Firebase Auth ile giriş yap (Bu sadece istemcide çalışır, backend için doğru yöntem değil!)
+    return res.status(400).json({ message: "Giriş doğrulaması istemci tarafında yapılmalı!" });
   } catch (error) {
     return res.status(401).json({ message: "Geçersiz e-posta veya şifre!" });
   }
