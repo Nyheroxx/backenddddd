@@ -39,12 +39,21 @@ app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Firebase Admin SDK, şifre doğrulama işlemini yapmaz, sadece e-posta ile kullanıcı verilerini alır
     const userRecord = await auth.getUserByEmail(email);
-    if (userRecord) {
-      return res.status(200).json({ message: "Giriş başarılı!", user: userRecord });
-    }
+
+    // Kullanıcıyı bulduysak, ancak şifreyi doğrulamak için Firebase istemcisini kullanmalısınız
+    // Şifre doğrulama işlemini burada yapamıyoruz, bunun için istemci tarafında firebase.auth().signInWithEmailAndPassword kullanmak gerekir
+
+    res.status(200).json({
+      message: "Giriş başarılı!",
+      user: userRecord,
+    });
   } catch (error) {
-    return res.status(401).json({ message: "Geçersiz giriş bilgileri!" });
+    console.error("Hata:", error);
+    return res.status(401).json({
+      message: "Geçersiz giriş bilgileri!",
+    });
   }
 });
 
