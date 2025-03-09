@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 const admin = require("firebase-admin");
-admin.initializeApp();
 const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
 
 // Firebase Admin SDK'yı başlat
@@ -36,19 +35,19 @@ app.listen(PORT, () => {
 });
 
 // 🔥 Admin Girişi API’si
-app.post('/login', async (req, res) => {
+app.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const userRecord = await admin.auth().getUserByEmail(email);
-    // Kullanıcıyı bulursanız işlemi devam ettirebilirsiniz
+    const userRecord = await auth.getUserByEmail(email);
     if (userRecord) {
-      res.status(200).json({ message: "Giriş başarılı!", user: userRecord });
+      return res.status(200).json({ message: "Giriş başarılı!", user: userRecord });
     }
   } catch (error) {
-    res.status(401).json({ message: "Geçersiz giriş bilgileri!" });
+    return res.status(401).json({ message: "Geçersiz giriş bilgileri!" });
   }
 });
+
 
 // 🔥 Mesaj Gönderme API’si
 app.post("/api/send-message", async (req, res) => {
